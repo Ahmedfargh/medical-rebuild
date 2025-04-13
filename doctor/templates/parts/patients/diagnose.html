@@ -1,0 +1,136 @@
+{%load static%}
+<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 card">
+  <div class="card-header">
+    <h3 class="text-center">diagnose patients</h3>
+  </div>
+  <div class="card-body">
+    <div class="form-group">
+      <div class="input-group">
+        <div class="input-group-text">patient's number</div>
+        <input
+          type="number"
+          class="form-control form-control-lg"
+          name="patient_id"id="patient_id"
+        />
+        <button class="btn btn-primary"id="load_history">
+            load
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="col-lg-7 col-md-7 col-sm-12 col-xs-12 card ml-2">
+  <div class="card-header">
+    <h3 class="text-center">symptoms</h3>
+  </div>
+  <div class="card-body">
+    <table class="table table-hover table-stribed">
+      <thead>
+        <tr>
+          <td>name</td>
+          <td>symptom for</td>
+        </tr>
+      </thead>
+      <tbody id="symptoms">
+      </tbody>
+    </table>
+  </div>
+</div>
+<div class="col-12 card">
+  <div class="card-header">
+    <h3>final diagnose</h3>
+  </div>
+  <div class="card-body">
+    <div class="diagnose_patient">
+      <div class="form-group">
+        <div class="input-group">
+          <label class="input-group-text">
+            disease name
+          </label>
+          <input type="text" class="form-control form-control-lg"id="disease_name">
+          <button class="btn btn-primary"id="record_Diagnose" onclick="record_Diagnose()">
+            <i class="fas fa-upload"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    <table class="table table-striped table-hover">
+      <thead>
+        <td>
+          #
+        </td>
+        <td>
+          name
+        </td>
+      </thead>
+      <tbody id="final_Diagnose_Body">
+        
+      </tbody>
+    </table>
+  </div>
+</div>
+<script src="{% static '/vendor/jquery/jquery-3.3.1.min.js'%}"></script>
+<script>
+    let symptoms_ids=[];
+    let current_patient_id=null;
+    $("#load_history").on("click",function(){
+      current_patient_id=$("#patient_id").val();
+      alert($("#patient_id").val());
+      if($("#patient_id").val()!="" ||$("patient_id").val())
+        $.ajax({
+            url:"{% url 'load_patients'%}",
+            type:"get",
+            data:{
+              patient:$("#patient_id").val(),
+            },
+            success:function(response){
+              let symptoms=response.symptoms;
+              for (const key in symptoms) {
+                let html="<tr>";
+                html+="<td>"+symptoms[key].name+"</td>";
+                html+="<td>"+symptoms[key].symptom_parent+"</td>";
+                let symptom_parameter=JSON.stringify(symptoms[key]);
+                html+="<td><button class='btn btn-primary' id='remember_Diagnoses' onclick='prepare_diangose("+symptom_parameter+")'>symptom</button></td>";
+                html+="</tr>";
+                $("#symptoms").append(html);
+              }
+            }
+        });
+    });
+    function prepare_diangose(symptom){
+      let html="<tr>";
+      html+="<td>"+symptom.id+"</td>";
+      html+="<td>"+symptom.name+"</td>";
+      html+="</tr>";
+      console.log(symptom);
+      symptoms_ids.push(symptom.id);
+      console.log(symptoms_ids);
+      $("#final_Diagnose_Body").append(html);
+    }
+    function record_Diagnose(){
+      console.log({
+          symptoms:JSON.stringify(symptoms_ids),
+          disese:$("#disease_name").val(),
+          symptom_len:symptoms_ids.length,
+          patient_id:$("#patient_id").val()
+        });
+      $.ajax({
+        url:"{% url 'record_diangose'%}",
+        type:"get",
+        dataType: "json",
+
+        data:{
+          symptoms:symptoms_ids.toString(),
+          disese:$("#disease_name").val(),
+          symptom_len:symptoms_ids.length,
+          patient_id:$("#patient_id").val()
+        },
+        success:function(res){
+          alert(res.message);
+        },
+        failure:function(res){
+          alert(res.message);
+        }
+      });
+    }
+</script>

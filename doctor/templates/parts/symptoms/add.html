@@ -1,0 +1,64 @@
+{% load static %}
+<div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+  <div class="card">
+    <div class="card-header">
+      <h4>add symptoms</h4>
+    </div>
+    <div class="card-body">
+      <div class="form-group row">
+        <div class="input-group col-lg-4 col-md-4 col-sm-12 col-xs-12">
+          <label for="symtopms_id" class="input-group-text">symptom</label>
+          <input type="text" class="form-control" id="symp_name" />
+        </div>
+        <div class="input-group col-lg-4 col-md-4 col-sm-12 col-xs-12">
+          <label for="symtopms_id" class="input-group-text"
+            >parent symptom</label
+          >
+          <select class="form-control" id="symptom_parent">
+            <option value="-1">non relatated symptom</option>
+            {% for sym in symptoms%}
+            <option value="{{sym.id}}">
+                {{sym.name}}
+                {% if  sym.symptom_parent%}
+                => {{sym.symptom_parent.name}}
+                {% endif %}
+               
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+        {%csrf_token%}
+        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+            <button class="btn btn-primary"id="add_sym">add</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="{% static '/vendor/jquery/jquery-3.3.1.min.js'%}"></script>
+
+<script>
+  $("#add_sym").on("click", function () {
+    if ($("#symp_name").val() != "" || $("#symp_name").val()) {
+      $.ajax({
+        url: "{% url 'add_symptoms'%}",
+        type: "get",
+        data: {
+          csrfmiddlewaretoken: $("input[name='csrfmiddlewaretoken']").val(),
+          name: $("#symp_name").val(),
+          symptom_id: $("#symptom_parent").val(),
+        },
+        success: function (res) {
+          if (res.status) {
+            alert(res.message);
+          }
+        },
+        failure: function (res) {
+          console.log(res);
+        },
+      });
+    }else{
+        alert("there is no name");
+    }
+  });
+</script>

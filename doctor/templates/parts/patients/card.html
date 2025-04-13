@@ -1,0 +1,128 @@
+{%load static%}
+<div class="card col-lg-12 col-md-12 col-sm-12 col-xs-12">
+  <div class="card-header">
+    <h2>{{patient.name}}'s history</h2>
+    <h4>
+      {% if excel_file %}
+        <a href="{{excel_file}}">file</a>
+      {% endif %}
+    </h4>
+  </div>
+  <div class="card-body">
+    {% if history%}
+    <form class="row"method="post"action="{% url 'filter_patient_history' pk=patient.id%}">
+        {%csrf_token%}
+        <div class="form-group col-3">
+            <div class="input-group">
+                <label class="input-group-text">start date</label>
+                <input type="date" name="start_date"class="form-control from-control-lg">
+            </div>
+        </div>
+        <div class="form-group col-3">
+            <div class="input-group">
+                <label class="input-group-text">end date</label>
+                <input type="date" name="end_date"class="form-control from-control-lg">
+            </div>
+        </div>
+        {% comment %} <div class="form-group col-3">
+            <div class="input-group">
+                <h4></h4>
+                <label class="custom-control custom-radio custom-control-inline">
+                    <input type="radio" value="all" name="diagnosed_By" checked="" class="custom-control-input"><span class="custom-control-label">all</span>
+                </label>
+                <label class="custom-control custom-radio custom-control-inline">
+                    <input type="radio" value="you" name="diagnosed_By" class="custom-control-input"><span class="custom-control-label">you</span>
+                </label>
+                <label class="custom-control custom-radio custom-control-inline">
+                    <input type="radio" value="other"name="diagnosed_By" class="custom-control-input"><span class="custom-control-label">other</span>
+                </label>
+            </div>
+        </div> {% endcomment %}
+        <div class="col-3">
+            <button class="btn btn-primary">filter</button>
+        </div>
+    </form>
+    <table class="table  table-response table-hover table-stribed">
+      <thead>
+        <td>#</td>
+        <td>disease</td>
+        <td>symptoms</td>
+        <td>date</td>
+        <td>doctor</td>
+      </thead>
+      <tbody>
+        {%for disease in history%}
+        <tr>
+          <td>{{disease.id}}</td>
+          <td>{{disease.symptom_id.name}}</td>
+          <td style="width:30%">
+            {%for sym in disease.symptoms%}
+            {{sym}},
+            {%endfor%}
+          </td>
+          <td>
+            {{disease.created_at}}
+          </td>
+          <td>
+            {% if doctor.id == disease.diagnosed_by.id %}
+                you
+            {% else %}
+                {{disease.diagnosed_by.name}}
+            {% endif %}
+          </td>
+        </tr>
+        {%endfor%}
+      </tbody>
+    </table>
+    <!-- Bootstrap Pagination -->
+    <nav aria-label="Page navigation">
+      <ul class="pagination justify-content-center">
+    
+        {% if history.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ patients.previous_page_number }}" aria-label="Previous">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+        {% else %}
+          <li class="page-item disabled">
+            <span class="page-link" aria-hidden="true">&laquo;</span>
+          </li>
+        {% endif %}
+    
+        {% for num in history.paginator.page_range %}
+          {% if history.number == num %}
+            <li class="page-item active">
+              <span class="page-link">{{ num }}</span>
+            </li>
+          {% elif num >= history.number|add:-2 and num <= history.number|add:2 %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+            </li>
+          {% endif %}
+        {% endfor %}
+    
+        {% if history.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ history.next_page_number }}" aria-label="Next">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+        {% else %}
+          <li class="page-item disabled">
+            <span class="page-link" aria-hidden="true">&raquo;</span>
+          </li>
+        {% endif %}
+    
+      </ul>
+    </nav>
+    {% else %}
+    
+    {% endif %}
+  </div>
+  <form method="POST"action="{% url 'load_patient_into_excel'%}">
+    {% csrf_token %}
+    <input type="hidden"name="patitent_id"value="{{patient.id}}">
+    <button class="btn btn-info">load into excel sheet</button>  
+  </form>
+</div>

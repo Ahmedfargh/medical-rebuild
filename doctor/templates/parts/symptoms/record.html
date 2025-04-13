@@ -1,0 +1,170 @@
+{% load static%}
+<div class="col-lg-12 col-sm-12 col-xs-12 col-sm-12">
+    <div class="card">
+        <div class="card-header">
+            <h3>record symptoms</h3>
+        </div>
+        <div class="card-body">
+            <div class="from-group row">
+                <div class="input-group col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                    <label class="input-group-text">symptoms</label>
+                    <select class="form-control form-control-lg"id="symptom">
+                        {% for sym in syms%}
+                            <option value="{{sym.id}}">{{sym.name}}</option>
+                        {% endfor %}
+\                    </select>
+                </div>
+                <div class="input-group col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                    <label class="input-group-text">patient</label>
+                    <select class="form-control-lg form-control"id="selected_patient" style="align-self:center;" multiple>
+                    </select>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                    <button class="btn btn-primary"id="show_search">
+                        search patients
+                    </button>
+                    <button class="btn btn-primary"id="record_symptoms"onclick="prepareToRecord.record_patient_suffer()">record</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-lg-12 col-sm-12 col-xs-12 col-sm-12"id="search_form_control">
+    <div class="card">
+        <div class="card-header">
+            <h3>patients under servilliance</h3>
+        </div>
+        <div class="card-body">
+            <div class="search_form_control">
+                <div class="form-group">
+                    <div class="input-group">
+                        <label class="input-group-text">
+                            name
+                        </label>
+                        <input type="text" class="form-control"id="search_by_name">
+                        <button class="btn btn-primary"id="search_btn">search</button>
+                    </div>
+                </div>
+            </div>
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <td>
+                            #
+                        </td>
+                        <td>
+                            name
+                        </td>
+                        <td>
+                            phone
+                        </td>
+                        <td>
+                            email
+                        </td>
+                    </tr>
+                </thead>
+                <tbody id="patients_results">
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script src="{% static '/vendor/jquery/jquery-3.3.1.min.js'%}"></script>
+
+<script>
+    class prepareToRecord{
+        static bind(patient_id,patient_name){
+            let html=`<option value='${patient_id}'>${patient_name}</option>`;
+
+            $("#selected_patient").append(html);
+        }
+        static print_Results(results){
+            console.log(results);
+            $("#patients_results").html("");
+            for (const key in results) {
+                let html="<tr>";
+                html+="<td>"+results[key].id+"</td>";
+                html+="<td>"+results[key].name+"</td>";
+                html+="<td>"+results[key].phone+"</td>";
+                html+="<td>"+results[key].email+"</td>";
+                html += `<td><button class='btn btn-primary' onclick="prepareToRecord.bind(${results[key].id}, '${results[key].name}')">record symptom</button></td>`;
+
+                html+="</tr>";
+                $("#patients_results").append(html);
+            }
+        }
+        static record_patient_suffer(){
+            let symptoms=$("#symptom").val();
+            let patients=$("#selected_patient").val();
+            console.log(symptoms);
+            $.ajax({
+                url:"{%url 'record_Symptoms_api'%}",
+                type:"get",
+                data:{
+                    symptoms:symptoms,
+                    patients:new Array(patients)
+                },
+                success:function(response){
+                    if(response.status==1){
+                        alert("symptoms recorded");
+                    }else{
+                        alert(response.messages);
+                    }
+                }
+              }
+            );
+        }
+    }
+    $(document).ready(function(){
+        $("#search_form_control").hide();
+        $("#show_search").on("click",function(){
+            $("#search_form_control").dialog({
+                width:800,
+                resizable:true,
+                draggable:true,
+                buttons: [
+                    {
+                        text: "Ok",
+                        click: function() {
+                            $( this ).dialog( "close" );
+                        },
+                        class:"btn"
+                    },
+                    {
+                        text: "Cancel",
+                        click: function() {
+                            $( this ).dialog( "close" );
+                        },
+                        class:"btn"
+
+                    }
+                ]
+            });
+        });
+        $("#search_btn").on("click",function(){
+            let key=$("#search_by_name").val();
+            console.log(key);
+            if(key || key==""||key==" "){
+                $.ajax({
+                    url:"{% url 'search_patient'%}",
+                    data:{
+                        key:key
+                    },
+                    success:function(response){
+                        if(response.status==1){
+                            prepareToRecord.print_Results(response.results);
+                        }
+                    },
+                    failure:function(response){
+                        console.log(response);
+                    }
+                });
+            }else{
+                alert("enter key to search");
+            }
+
+        });
+    });
+    
+</script>

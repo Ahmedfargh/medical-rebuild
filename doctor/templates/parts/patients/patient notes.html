@@ -1,0 +1,82 @@
+<div class="card col-12">
+    <div class="card-header">
+        <h3> patient's notes</h3>
+    </div>
+    <div class="card-body">
+        <table class="table table-hover table-stribed">
+            <thead>
+                <td>
+                    #
+                </td>
+                <td>
+                    note
+                </td>
+                <td>
+                    doctor
+                </td>
+                <td>
+                    date
+                </td>
+            </thead>
+            <tbody>
+                {%for note in notes %}
+                <tr>
+                    <td>
+                        {{note.id}}
+                    </td>
+                    <td>
+                        {{note.text}}
+                    </td>
+                    <td>
+                        {{note.doctor.name}}
+                    </td>
+                    <td>
+                        {{note.created_at}}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+          
+              {% if notes.has_previous %}
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ notes.previous_page_number }}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                  </a>
+                </li>
+              {% else %}
+                <li class="page-item disabled">
+                  <span class="page-link" aria-hidden="true">&laquo;</span>
+                </li>
+              {% endif %}
+          
+              {% for num in notes.paginator.page_range %}
+                {% if notes.number == num %}
+                  <li class="page-item active">
+                    <span class="page-link">{{ num }}</span>
+                  </li>
+                {% elif num >= notes.number|add:-2 and num <= notes.number|add:2 %}
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                  </li>
+                {% endif %}
+              {% endfor %}
+          
+              {% if notes.has_next %}
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ notes.next_page_number }}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                  </a>
+                </li>
+              {% else %}
+                <li class="page-item disabled">
+                  <span class="page-link" aria-hidden="true">&raquo;</span>
+                </li>
+              {% endif %}
+          
+            </ul>
+          </nav>
+    </div>
+</div>

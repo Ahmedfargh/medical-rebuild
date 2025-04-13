@@ -1,0 +1,27 @@
+<style>
+    .card-strip{
+        color:red;
+        padding-right: 2cm;
+    }
+    .certificate{
+        overflow: hidden;
+    }
+</style>
+<div class="row">
+    {% for cert in certificate %}
+
+        <div class="card col-lg-3 col-md-3 col-sm-6 col-xs-12 certificate {%if not cert.status %}nonactive{%endif%}">
+            
+            <div class="card-header">
+               <h3 class="text-center"> {{cert.name}}</h3>
+            </div>
+            <div class="card-body">
+                {% if not cert.status %}
+                    <h5 class="card-strip"><i class="fas fa-certificate"></i> </h5><p>unactive will not show to patients</p>
+            {% endif %}
+                <a href="{{cert.file.url}}">{{cert.name}}</a>
+               
+            </div>
+        </div>
+    {% endfor %}
+</div>
