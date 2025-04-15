@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser,PermissionsMixin
 from django.core.exceptions import ValidationError
 import datetime
+
+from services.counters.DoctorCounts import Counter
 # Create your models here.
 def validate_pdf(file):
     if not file.name.endswith('.pdf'):
@@ -37,6 +39,12 @@ class DoctorModel(AbstractBaseUser):
         return [model.to_json() for model in query]
     def getNotifications(self):
         return DoctorNotification.objects.filter(doctor_id=self)
+    def countPatient(self):
+        return Counter(self).countPatient()
+    def countApprovedCertificate(self):
+        return Counter(self).countCertificate(True)
+    def countUnapprovedCertificate(self):
+        return Counter(self).countCertificate(False)
 class DoctorNotification(models.Model):
     id=models.AutoField(primary_key=True)
     text=models.TextField()

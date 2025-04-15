@@ -1,79 +1,141 @@
 {% load static%}
-<div class="card col-12">
+<style>
+  .personal_image {
+    width: 50dvh;
+    height: 50dvh;
+    background-size: cover;
+    position: relative;
+    margin-top: 0.1cm;
+    align-items: center;
+  }
+  .toggle_button {
+    position: relative;
+    left: 0%;
+    right: 0%;
+    top: 100%;
+    bottom: 0%;
+  }
+  @media (max-width: 960px) {
+    .personal_image {
+      width: 50dvh;
+      height: 20dvh;
+
+      border-radius: 500cm;
+    }
+  }
+  .personal-image-container {
+    margin-right: 75%;
+  }
+  .personal_info{
+    max-height: fit-content;
+  }
+  .personal_info > .card{
+    margin-bottom: 0px;
+  }
+  .floating_list{
+    margin-bottom: 0.1cm;
+  }
+</style>
+{% include 'parts/doctor/personalInfoSideBar.html'%}
+<div class="col-lg-8 col-md-8 col-sm-12 col-xs-12 ml-2">
+  <div class="card">
     <div class="card-header">
         <h4>{{doctor.name}}</h4>
     </div>
-    <div class="card-body">
-        <img class="img-thumbnail"src="{{doctor.personal_image.url}}">
-        
-        <form class="row"method="POST"action="{% url 'mod_personal_info'%}">
-            {% csrf_token %}
-            <div class="form-group  col-4 ml-2">
-                <div class="input-group">
-                    <label class="input-group-text">
-                        name
-                    </label>
-                    <input type="text"name="name"class="form-control form-control-lg"value="{{doctor.name}}">
-                </div>
+    <div class="card-body row">
+        <form class="row col-12 mb-2" method="POST" action="{% url 'mod_personal_info'%}">
+        {% csrf_token %}
+        <div class="form-group col-12 ">
+            <div class="input-group">
+            <label class="input-group-text"> name </label>
+            <input
+                type="text"
+                name="name"
+                class="form-control form-control-lg"
+                value="{{doctor.name}}"
+            />
             </div>
-            <div class="form-group col-4 ml-2">
-                <div class="input-group">
-                    <label class="input-group-text">
-                        email
-                    </label>
-                    <input type="text"name="email"class="form-control form-control-lg"value="{{doctor.email}}">
-                </div>
-                
-            </div>
-            <div class="form-group  col-4 ml-2">
-                <div class="input-group">
-                    <label class="input-group-text">
-                        physical address
-                    </label>
-                    <input type="text" name="address" class="form-control form-control-lg"value="{{doctor.address}}">
-                </div>
-
-            </div>
-            <div class="form-group col-4 ml-2">
-                <div class="input-group">
-                    <label class="input-group-text">
-                        phone
-                    </label>
-                    <input type="tel"class="form-control form-control-lg"name="phone"value="{{doctor.phone}}">
-
-                </div>
-            </div>
-            <div class="form-group col-4 ml-2">
-                <a href="{{doctor.certificate_file.url}}">certificate</a>
-                <button class="btn btn-success"type="submit"><i class="fas fa-plus"></i></button>
-                
-            </div>
-            
-        </form>
-        <div class="form-group">
-            <form class="input-group" method="POST"action="{% url 'mod_personal_certificate'%}"enctype="multipart/form-data">
-                <label class="input-group-text">
-                    personal certificate
-                </label>
-                {% csrf_token %}
-                <input type="file"class="form-control form-control-lg"name="personal_certificate">
-                <button class="btn btn-success">
-                    <i class="fas fa-upload"></i>
-                </button>
-            </form>
         </div>
-        <form class="row" action="{% url 'mod_personal_image'%}"method="POST" enctype="multipart/form-data" >
-            {% csrf_token %}
-            <div class="form-group col-4 ml-2">
-                <div class="input-group">
-                    <label class="input-group-text">
-                        personal image 
-                    </label>
-                    <input type="file" class="form-control form-control-lg"name="personal_image">
-                </div>
-                <button class="btn btn-success"><i class="fas fa-upload"></i></button>
+
+        <div class="form-group col-12">
+            <div class="input-group">
+            <label class="input-group-text"> email </label>
+            <input
+                type="text"
+                name="email"
+                class="form-control form-control-lg"
+                value="{{doctor.email}}"
+            />
             </div>
-            
+        </div>
+        <div class="form-group col-12 ">
+            <div class="input-group">
+            <label class="input-group-text">  address </label>
+            <input
+                type="text"
+                name="address"
+                class="form-control form-control-lg"
+                value="{{doctor.address}}"
+            />
+            </div>
+        </div>
+        <div class="form-group col-12">
+            <div class="input-group">
+            <label class="input-group-text"> phone </label>
+            <input
+                type="tel"
+                class="form-control form-control-lg"
+                name="phone"
+                value="{{doctor.phone}}"
+            />
+            </div>
+        </div>
+        <div class="col-12">
+
+            <button class="btn btn-primary" type="submit">save</button>
+        </div>
         </form>
+        
     </div>
+    
+    
+  </div>
+ {% include 'parts/doctor/modifyPersonalCertificate.html'%}
+ {% include 'parts/doctor/modifiyPersonalImage.html'%}
 </div>
+</div>
+<div
+  class="modal fade"
+  id="exampleModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <a href="#" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </a>
+      </div>
+      <div class="modal-body">
+        <p>
+          Woohoo, You are readng this text in a modal! Use Bootstrap’s
+          JavaScript modal plugin to add dialogs to your site for lightboxes,
+          user notifications, or completely custom content.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <a href="#" class="btn btn-secondary" data-dismiss="modal">Close</a>
+        <a href="#" class="btn btn-primary">Save changes</a>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="{% static '/vendor/jquery/jquery-3.3.1.min.js'%}"></script>
+
+<script>
+  $(document).ready(function () {});
+</script>

@@ -1,0 +1,25 @@
+{%load static %}
+<div class="card">
+  <div class="card-header">
+    <h3 class="">modify personal certificate</h3>
+  </div>
+  <div class="card-body col-12">
+    <form
+      class="input-group"
+      method="POST"
+      action="{% url 'mod_personal_certificate'%}"
+      enctype="multipart/form-data"
+    >
+      <label class="input-group-text"> personal certificate </label>
+      {% csrf_token %}
+      <input
+        type="file"
+        class="form-control form-control-lg"
+        name="personal_certificate"
+      />
+      <button class="btn btn-success">
+        <i class="fas fa-upload"></i>
+      </button>
+    </form>
+  </div>
+</div>

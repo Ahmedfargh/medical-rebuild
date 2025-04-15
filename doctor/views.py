@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from doctor.forms import RegisterForm
 from .models import DoctorModel
 from django.contrib.auth.hashers import make_password,check_password
-from django.contrib.auth import login
+from django.contrib.auth import login,logout
 from django.core.paginator import Paginator
 
 from patients.models import patient
@@ -15,6 +15,14 @@ class DoctorView:
         return render(request,"login.html")
     def Register(request):
         return render(request,"sign-up.html")
+    def logOut(request):
+        try:
+            doctor_object=DoctorModel.objects.get(pk=request.session["doctor_id"])
+            logout(request)
+            del request.session
+        except DoctorModel.DoesNotExist:
+            return render(request,"login.html",{"status":{"status":1,"message":"your account was deleted"}})
+        return render(request,"login.html",{"status":{"status":1,"message":"you loged out"}})
     def RegisterDoctor(request):
         if request.method =="POST":
             if request.POST.get("password") and request.POST.get("password_confirm") and request.POST.get("password")==request.POST.get("password_confirm"):
@@ -53,7 +61,7 @@ class DoctorView:
             doctor=DoctorModel.objects.get(pk=request.session["doctor_id"])
             patients=None
             try:
-                patients=patient.objects.filter(doctor_id=doctor)
+                patients=patient.objects.filter(doctor_id=doctor).order_by("-id")
             except patient.DoesNotExist:
                 pass
             paginator = Paginator(patients, 5)

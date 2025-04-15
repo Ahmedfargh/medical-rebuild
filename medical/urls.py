@@ -35,8 +35,8 @@ urlpatterns = [
     path("doctor/modifiy/info",DoctorView.modifyAccount,name="mod_personal_info"),
     path("doctor/modifiy/personal_image",DoctorView.modifyPersonalImage,name="mod_personal_image"),
     path("doctor/modifiy/personal_certificate",DoctorView.modifyPersonalCertificate,name="mod_personal_certificate"),
-    path("doctor/add/patient/note",DoctorView.saveNote,name="save_patient_note")
-
+    path("doctor/add/patient/note",DoctorView.saveNote,name="save_patient_note"),
+    path("doctor/logout",DoctorView.logOut,name="logOut")
 ]
 urlpatterns+=url.patient_url
 urlpatterns+=symptomsUrl

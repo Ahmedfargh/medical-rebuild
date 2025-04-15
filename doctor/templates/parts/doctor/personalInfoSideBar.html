@@ -1,0 +1,46 @@
+{% load static%}
+<div class="row col-lg-3 col-md-3 col-xs-12 col-sm-12 personal_info">
+    <div class="card mb-2">
+      <img
+        class="img-fluid"
+        src="{{doctor.personal_image.url}}"
+        alt="Card image cap"
+      />
+      <div class="card-body">
+        <h3 class="card-title">{{doctor.name}}</h3>
+        <p class="card-text">
+          <ul style="list-style-type: none;">
+              <li class="floating_list">{{doctor.gender}}</li>
+              <li class="floating_list"><i class="fas fa-map-marker"></i> {{doctor.address}}</li>
+              <li class="floating_list"><i class="fas fa-phone"></i> {{doctor.phone}}</li>
+              <li class="floating_list"><i class="fas fa-certificate"></i> <a href="{{doctor.certificate_file.url}}">certificate</a></li>
+              
+          </ul>
+        </p>
+      </div>
+    </div>
+    <div class="card col-12 mb-2">
+      <div class="card-header">
+        <h3 class="text-center">patient's count</h3>
+      </div>
+      <div class="card-body">
+        <h4 class="text-center">{{doctor.countPatient}}</h4>
+      </div>
+    </div>
+    <div class="card col-12 mb-2">
+      <div class="card-header">
+        <h3 class="text-center">approved certificate</h3>
+      </div>
+      <div class="card-body">
+        <h4 class="text-center">{{doctor.countApprovedCertificate}}</h4>
+      </div>
+    </div>
+    <div class="card col-12">
+      <div class="card-header">
+        <h3 class="text-center">unapproved certificate</h3>
+      </div>
+      <div class="card-body">
+        <h4 class="text-center">{{doctor.countUnapprovedCertificate}}</h4>
+      </div>
+    </div>
+  </div>
