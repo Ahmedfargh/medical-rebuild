@@ -1,3 +1,4 @@
+{% load static %}
 <div class="influence-finder">
   <div class="container-fluid dashboard-content">
     <!-- ============================================================== -->
@@ -40,10 +41,10 @@
         <!-- ============================================================== -->
         <!-- card influencer one -->
         <!-- ============================================================== -->
+        {% for doctor_obj in other_doctors %}
         <div class="card">
           <div class="card-body">
             <div class="row align-items-center">
-              {% for doctor_obj in other_doctors %}
               <div class="col-xl-9 col-lg-12 col-md-12 col-sm-12 col-12">
                 <div class="user-avatar float-xl-left pr-4 float-none">
                   <img
@@ -51,6 +52,7 @@
                     alt="User Avatar"
                     class="rounded-circle user-avatar-xl"
                   />
+                  <i class="fas fa-dot-circle"id="{{doctor_obj.id}}_online_pointer"style="color:green"></i>
                 </div>
                 <div class="pl-xl-3">
                   <div class="m-b-0">
@@ -60,6 +62,8 @@
                     <div
                       class="rating-star d-inline-block pl-xl-2 mb-2 mb-xl-0"
                     >
+                    <i class="fas fa-check-circle"></i>
+                      <input type="hidden"class="doctor_id"value="{{doctor_obj.id}}">
                       <i class="fa fa-fw fa-star"></i>
                       <i class="fa fa-fw fa-star"></i>
                       <i class="fa fa-fw fa-star"></i>
@@ -130,6 +134,12 @@
         </div>
         {% endfor %}
       </div>
+      <input type="hidden"id="doctor_ids"name="doctors_ids"value="{{doctor_ids}}">
+      <input type="hidden" id="loged_doctor"name="loged_doctor"value="{{doctor.id}}">
     </div>
   </div>
 </div>
+<script src="{% static '/vendor/jquery/jquery-3.3.1.min.js'%}"></script>
+<script src="{% static '/ajax/axios.js'%}"></script>
+<script src="{% static '/js/validation.js'%}"></script>
+{% include 'parts/chats/checkinOnlineStatus.html'%}

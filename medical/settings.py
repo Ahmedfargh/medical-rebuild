@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "channels",
     "doctor",
     "patients",
 ]
@@ -54,6 +55,7 @@ MIDDLEWARE = [
 ROOT_URLCONF = "medical.urls"
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.fallback.FallbackStorage'
+ASGI_APPLICATION = 'medical.asgi.application'
 
 
 CACHES = {
@@ -62,7 +64,12 @@ CACHES = {
         'LOCATION': 'cache'
     }
 }
-
+# CACHES = {
+#     "default":{
+#         "BACKEND":"django_redis.cache.RedisCache",
+#         "LOCATION":"redis://127.0.0.1:6379/1",
+#     }
+# }
 CHANNELS_LAYERS={
     
         'default':{"BACKEND":"channels.layers.InMemoryChannelLayer"}

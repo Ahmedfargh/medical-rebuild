@@ -4,83 +4,108 @@
     <div class="card-header">
       <h3 class="text-center">add patient</h3>
     </div>
-    <div class="card-body row">
-      {% csrf_token ty%}
-      <div class="input-group col-lg-4 col-md-4 col-sm-12 col-xs-12 mb-2">
-        <label class="input-group-text">name</label>
-        <input type="text" class="form-control" id="patient_name" />
-      </div>
-      <div class="input-group col-lg-4 col-md-4 col-sm-12 col-xs-12 mb-2">
-        <label class="input-group-text">email</label>
-        <input type="email" class="form-control" id="email" />
-      </div>
-      <div class="input-group col-lg-4 col-md-4 col-sm-12 col-xs-12 mb-2">
-        <label class="input-group-text">address</label>
-        <input type="text" class="form-control" id="patient_address" />
-      </div>
-      <div class="input-group col-lg-4 col-md-4 col-sm-12 col-xs-12 mb-2">
-        <label class="input-group-text">phone</label>
-        <input type="phone" class="form-control" id="patient_phone" />
-      </div>
-      <div class="input-group col-lg-4 col-md-4 col-sm-12 col-xs-12 mb-2">
-        <label class="input-group-text">Birht Date</label>
-        <input type="date" class="form-control" id="patient_birth_date" />
-      </div>
-      <div class="input-group col-lg-4 col-md-4 col-sm-12 col-xs-12 mb-2">
-        <label class="input-group-text">job</label>
-        <input type="text" class="form-control" id="patient_job" />
-      </div>
-      <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 mb-2">
-        <button class="btn btn-primary" id="save_patient">save</button>
-      </div>
+    <div class="card-body">
+      <form id="add_patient" class="row">
+        {% csrf_token %}
+        <div class="input-group col-lg-4 col-md-4 col-sm-12 col-xs-12 mb-2">
+          <label class="input-group-text">name</label>
+          <input
+            type="text"
+            class="form-control"
+            name="name"
+            id="patient_name"
+          />
+        </div>
+        <div class="input-group col-lg-4 col-md-4 col-sm-12 col-xs-12 mb-2">
+          <label class="input-group-text">email</label>
+          <input type="email" class="form-control" name="email" id="email" />
+        </div>
+        <div class="input-group col-lg-4 col-md-4 col-sm-12 col-xs-12 mb-2">
+          <label class="input-group-text">address</label>
+          <input
+            type="text"
+            class="form-control"
+            name="address"
+            id="patient_address"
+          />
+        </div>
+        <div class="input-group col-lg-4 col-md-4 col-sm-12 col-xs-12 mb-2">
+          <label class="input-group-text">phone</label>
+          <input
+            type="phone"
+            class="form-control"
+            name="phone"
+            id="patient_phone"
+          />
+        </div>
+        <div class="input-group col-lg-4 col-md-4 col-sm-12 col-xs-12 mb-2">
+          <label class="input-group-text">Birht Date</label>
+          <input type="date" class="form-control" id="patient_birth_date" />
+        </div>
+        <div class="input-group col-lg-4 col-md-4 col-sm-12 col-xs-12 mb-2">
+          <label class="input-group-text">job</label>
+          <input type="text" class="form-control" id="patient_job" />
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 mb-2">
+          <button class="btn btn-primary" type="button" id="save_patient">
+            save
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
 <script src="{% static '/vendor/jquery/jquery-3.3.1.min.js'%}"></script>
 <script src="{% static '/ajax/axios.js'%}"></script>
+<script src="{% static '/js/validation.js'%}"></script>
 <script>
-  $(document).ready(function(){
-      $("#save_patient").on("click",function(){
-        if(window.confirm("do you want to add this patient")){
-            let name=$("#patient_name").val();
-            let email=$("#email").val();
-            let address=$("#patient_address").val();
-            let phone=$("#patient_phone").val();
-            let birth_date=$("#patient_birth_date").val();
-            let job=$("#patient_job").val();
-            console.log({
-                csrfmiddlewaretoken:$("input[name='csrfmiddlewaretoken']").val(),
-                name:name,
-                email:email,
-                address:address,
-            });
-            if(name && email && address && phone && birth_date && job){
-                
-                $.ajax({
-                    url:'{% url 'add_patient'%}',
-                    type:"get",
-                    data:{
-                          csrfmiddlewaretoken:$("input[name='csrfmiddlewaretoken']").val(),
-                          name:name,
-                          email:email,
-                          address:address,
-                          birth_date:birth_date,
-                          phone:phone,
-                          job:job
-                      },
-                      success:function(response){
-                          console.log(response);
-                          if(response.status){
-                            alert("patient was "+response.patient.name+"was added");
-                            window.location.reload();
-                          }
-                      },
-                      error:function(error){
-                          console.log(error);
-                      },
-                });
-            }
-        }
-      });
-  });
+    $(document).ready(function(){
+        $("#save_patient").on("click",function(){
+          if(window.confirm("do you want to add this patient")){
+
+              let name=$("#patient_name").val();
+              let email=$("#email").val();
+              let address=$("#patient_address").val();
+              let phone=$("#patient_phone").val();
+              let birth_date=$("#patient_birth_date").val();
+              let job=$("#patient_job").val();
+
+              if(name && email && validate_email(email) && validate_phone(phone) && address && phone && birth_date && job){
+
+                  $.ajax({
+                      url:'{% url 'add_patient'%}',
+                      type:"get",
+                      data:{
+                            csrfmiddlewaretoken:$("input[name='csrfmiddlewaretoken']").val(),
+                            name:name,
+                            email:email,
+                            address:address,
+                            birth_date:birth_date,
+                            phone:phone,
+                            job:job
+                        },
+                        success:function(response){
+                            console.log(response);
+                            if(response.status){
+                              alert("patient was "+response.patient.name+"was added");
+                              //window.location.reload();
+                            }
+                        },
+                        error:function(error){
+                            console.log(error);
+                        },
+                  });
+              }
+              else{
+                alert("invalid data");
+              }
+          }
+
+        });
+    });
+    {% comment %} alert("shit");
+    let ws=new WebSocket("ws://localhost:8000/ws/some_path/");
+  ws.onopen=function(message){
+      ws.send(JSON.stringify({message:"test"}));
+  } {% endcomment %}
 </script>

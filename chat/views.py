@@ -18,6 +18,9 @@ class ChatView:
         try:
             doctor_obj=DoctorModel.objects.get(pk=request.session["doctor_id"])
             other_doctors_objects=DoctorModel.objects.filter(name__icontains=request.POST.get("name"))
+            print(request.POST.get("name"))
+            if request.POST.get("name")=="":
+                return render(request,"doctors chats.html",{"doctor":doctor_obj,"other_doctors":None})
             return render(request,"doctors chats.html",{"doctor":doctor_obj,"other_doctors":other_doctors_objects})
         except DoctorModel.DoesNotExist:
             return render(request,"doctor/templates/login.html",{"status":0,"message":"session has ended"})

@@ -1,0 +1,36 @@
+
+<script>
+    let socket=new WebSocket("ws://localhost:8000/ws/doctor/online");
+    socket.onopen=function(){
+      socket.send(JSON.stringify({doctor_id:$("#loged_doctor").val(),add_to_online_user:true}));
+  
+    }
+  
+    socket.onmessage=function(message){
+        console.log(message);
+        let data=JSON.parse(message.data);
+        if(data.is_online){
+          $("#"+data.doctor_id+"_online_pointer").show();
+          return;
+        }
+        $("#"+data.doctor_id+"_online_pointer").hide();
+    }
+  
+    socket.close=function(){
+      alert("disconnected from the server");
+    }
+    window.onbeforeunload=function(){
+      alert("fuck");
+    }
+    async function DoctorOnline(id,elementId){
+      
+      socket.send(JSON.stringify({doctor_id:id,add_to_online_user:false}));
+    }
+    async function checkAllDoctor(){
+      for (const id of doctor_id) {
+        DoctorOnline(id.value,"_"+id.value+"_is_online");
+      }
+    }
+    let doctor_id=$(".doctor_id");
+    window.setInterval(checkAllDoctor,1000);
+  </script>

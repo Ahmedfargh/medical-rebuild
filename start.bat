@@ -1,0 +1,1 @@
+daphne medical.asgi:application
