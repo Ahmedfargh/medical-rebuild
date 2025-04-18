@@ -12,6 +12,7 @@ from patients.models import patient
 from patients.models import patientNotes
 from middlewares.OnlyPostRequests import OnlyPostRequest
 from middlewares.DoctorObjectFound import OnlyAuthenticatedDoctor
+from DataRepository.DoctorRepo import DoctorRepo
 # Create your views here.
 class DoctorView:
     def logingPage(request):
@@ -30,23 +31,14 @@ class DoctorView:
     @OnlyPostRequest  
     def RegisterDoctor(request):
         if request.POST.get("password") and request.POST.get("password_confirm") and request.POST.get("password")==request.POST.get("password_confirm"):
-
-            doctor=DoctorModel()
-            doctor.name=request.POST.get("name")
-            doctor.email=request.POST.get("email")
-            doctor.address=request.POST.get("address")
-            doctor.phone=request.POST.get("phone")
-            doctor.graduate_date=request.POST.get("graduation_date")
-            doctor.password=make_password(request.POST.get("password"))
-
-            uploaded_certificate = request.FILES.get('certificate_file')
-            uploaded_image = request.FILES.get('perosnal_image')
+            data=dict(request.POST)
+            data["graduation_date"]=data["graduation_date"][0]
+            data["certificate_file"]=request.FILES.get('certificate_file')
+            data["perosnal_image"]=request.FILES.get('perosnal_image')
+            repo=DoctorRepo()
             
-            doctor.certificate_file=uploaded_certificate
-            doctor.personal_image=uploaded_image
-
-            doctor.save()
-            return render(request,"login.html",{"status":{"status":1,"message":"registeration success"},"doctor":doctor})
+            repo.mass_assignment(data)
+            return render(request,"login.html",{"status":{"status":1,"message":"registeration success"}})
         return render(request,"register.html",{"status":{"status":0,"message":"in correct data"}})
     @OnlyPostRequest        
     def LoginDoctor(request):
@@ -84,20 +76,15 @@ class DoctorView:
     @OnlyPostRequest
     @OnlyAuthenticatedDoctor
     def modifyAccount(request):
-        doctor_obj=DoctorModel.objects.get(pk=request.session["doctor_id"])
-        doctor_obj.name=request.POST.get("name")
-        doctor_obj.email=request.POST.get("email")
-        doctor_obj.phone=request.POST.get("phone")
-        doctor_obj.address=request.POST.get("address")
-        doctor_obj.save()
+        print(request.GET)
+        repo=DoctorRepo()
+        repo.update(request.session["doctor_id"],dict(request.GET))
         return redirect("account")
     @OnlyPostRequest
     @OnlyAuthenticatedDoctor
     def modifyPersonalImage(request):
         try:
-            doctor_obj=DoctorModel.objects.get(pk=request.session["doctor_id"])
-            doctor_obj.personal_image=request.FILES['personal_image']
-            doctor_obj.save()
+            DoctorRepo().update(request.session["doctor_id"],{"personal_image":request.FILES["personal_image"]})
             return redirect("account")
         except Exception:
             raise
@@ -105,9 +92,7 @@ class DoctorView:
     @OnlyAuthenticatedDoctor
     def modifyPersonalCertificate(request):
         try:
-            doctor_obj=DoctorModel.objects.get(pk=request.session["doctor_id"])
-            doctor_obj.certificate_file=request.FILES["personal_certificate"]
-            doctor_obj.save()
+            DoctorRepo().update(request.session["doctor_id"],{"personal_certificate":request.FILES["personal_certificate"]})
             return redirect("account")
         except Exception:
             raise
