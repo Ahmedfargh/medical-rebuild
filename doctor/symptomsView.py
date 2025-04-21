@@ -4,7 +4,9 @@ from .models import symptom
 from django.http import JsonResponse
 from patients.models import patient
 from .models import symptom
+from middlewares.LogedUserCache import freshCache
 class symptoms:
+    @freshCache
     def getView(request):
         try:
             doctor=DoctorModel.objects.get(pk=request.session["doctor_id"])
@@ -14,7 +16,7 @@ class symptoms:
             return render(request,"login.html",{"status":{"status":0,"message":"your account was deleted"}})
         except symptom.DoesNotExist:
             return render(request,"symptoms.html",{"doctor":doctor,"symptoms":[]})
-
+    @freshCache
     def add_symptom(request):
         if request.method=="GET":
             sym=symptom()
@@ -29,6 +31,7 @@ class symptoms:
             sym.save()
             return JsonResponse({"status":1,"message":"symptom is created"})
         return JsonResponse({"status":0,"message":"method not allowed"})
+    @freshCache
     def diagnose_patient(request):
         try:
             doctor=DoctorModel.objects.get(pk=request.session["doctor_id"])
@@ -46,6 +49,7 @@ class symptoms:
             return render(request,"record_symptoms.html",{"doctor":doctor,"patients":doctor_patients,"syms":sym})            
         except DoctorModel.DoesNotExist:
             return render(request,"login.html",{"status":{"status":0,"message":"your account was deleted"}})
+    @freshCache
     def diagnose_patients(request):
         if request.method=="GET":
             try:

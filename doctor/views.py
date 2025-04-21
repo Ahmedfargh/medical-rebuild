@@ -13,6 +13,7 @@ from patients.models import patientNotes
 from middlewares.OnlyPostRequests import OnlyPostRequest
 from middlewares.DoctorObjectFound import OnlyAuthenticatedDoctor
 from DataRepository.DoctorRepo import DoctorRepo
+from middlewares.LogedUserCache import freshCache
 # Create your views here.
 class DoctorView:
     def logingPage(request):
@@ -47,13 +48,14 @@ class DoctorView:
             if check_password(request.POST.get("password"),doctor.password):
                 login(request,doctor)
                 request.session["doctor_id"]=doctor.id
-                cache.set("doctor_"+str(doctor.id)+"_is_loged",True,600)
+                cache.set("doctor_"+str(doctor.id)+"_is_loged",True,5)
                 return redirect("doctor_dashboard")
             return render(request,"login.html",{"status":{"status":0,"message":"credentials are wrong"}})
         except  DoctorModel.DoesNotExist:
 
             return render(request,"login.html",{"status":{"status":0,"message":"credentials are wrong"}})
     @OnlyAuthenticatedDoctor
+    @freshCache
     def Dashboard(request):
         doctor=DoctorModel.objects.get(pk=request.session["doctor_id"])
         patients=None
@@ -69,12 +71,14 @@ class DoctorView:
             page_obj = paginator.get_page(1)
         return render(request,"dashboard.html",{"doctor":doctor,"patients":page_obj})
     @OnlyAuthenticatedDoctor
+    @freshCache
     def doctor(request):
         doc=DoctorModel.objects.get(pk=request.session["doctor_id"])
         print(doc.to_json())
         return render(request,"account.html",{"doctor":doc})
     @OnlyPostRequest
     @OnlyAuthenticatedDoctor
+    @freshCache
     def modifyAccount(request):
         print(request.GET)
         repo=DoctorRepo()
@@ -82,6 +86,7 @@ class DoctorView:
         return redirect("account")
     @OnlyPostRequest
     @OnlyAuthenticatedDoctor
+    @freshCache
     def modifyPersonalImage(request):
         try:
             DoctorRepo().update(request.session["doctor_id"],{"personal_image":request.FILES["personal_image"]})
@@ -90,6 +95,7 @@ class DoctorView:
             raise
     @OnlyPostRequest
     @OnlyAuthenticatedDoctor
+    @freshCache
     def modifyPersonalCertificate(request):
         try:
             DoctorRepo().update(request.session["doctor_id"],{"personal_certificate":request.FILES["personal_certificate"]})
@@ -97,7 +103,7 @@ class DoctorView:
         except Exception:
             raise
     @OnlyAuthenticatedDoctor
-
+    @freshCache
     def saveNote(request):
         try:
             doctor_obj=DoctorModel.objects.get(pk=request.session["doctor_id"])

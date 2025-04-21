@@ -23,21 +23,22 @@ import os
 from middlewares.OnlyPostRequests import OnlyPostRequest
 from middlewares.DoctorObjectFound import OnlyAuthenticatedDoctor
 from middlewares.onlyGetRequests import OnlyGetRequest
+from DataRepository.PatientsRepo import patientsRepo
+from middlewares.LogedUserCache import freshCache
+
 # Create your views here.
 class PatientView:
     @OnlyGetRequest
+    @freshCache
     def add_patient(request):
-        pat=patient()
-        pat.name=request.GET.get("name")
-        pat.email=request.GET.get("email")
-        pat.address=request.GET.get("address")
-        pat.phone=request.GET.get("phone")
-        pat.birth_date=request.GET.get("birth_date")
-        pat.job=request.GET.get("job")
-        pat.doctor=DoctorModel.objects.get(pk=request.session["doctor_id"])
-        pat.save()
-        return JsonResponse({"status":1,"patient":pat.to_json()})
+
+        repo=patientsRepo()
+        data=dict(request.GET)
+        data["doctor"]=DoctorModel.objects.get(pk=request.session["doctor_id"])
+        patient_object=repo.mass_assignment(data=data)
+        return JsonResponse({"status":1,"patient":patient_object.to_json()})
     @OnlyGetRequest
+    @freshCache
     def search_patient(request):
         key=request.GET["key"]
         patients=patient.objects.filter(name__icontains=key,doctor=request.session["doctor_id"])
@@ -48,7 +49,7 @@ class PatientView:
             return JsonResponse({"status":1,"results":results})
         return JsonResponse({"status":2,"message":"no records match"})
     @OnlyAuthenticatedDoctor
-    
+    @freshCache
     def patients_view(request):
         doctor=DoctorModel.objects.get(pk=request.session["doctor_id"])
         patients=patient.objects.filter(doctor=request.session["doctor_id"])
@@ -60,6 +61,7 @@ class PatientView:
              page_obj = paginator.get_page(1)
         return render(request,"patients.html",{"doctor":doctor,"patients":page_obj})
     @OnlyGetRequest
+    @freshCache
     def save_patient_update(request):  
         patient_obj=patient.objects.get(pk=request.GET["id"])
         if patient_obj:
@@ -71,6 +73,7 @@ class PatientView:
             patient_obj.save()
         return JsonResponse({"status":1,"message":"patient was updated"})
     @OnlyGetRequest
+    @freshCache
     def delete_patient(request):
         try:
             patient.objects.get(pk=request.GET["patient_id"]).delete()
@@ -78,6 +81,7 @@ class PatientView:
         except patient.DoesNotExist:
             return JsonResponse({"status":0,"message":"patient was'nt found"})
     @OnlyGetRequest
+    @freshCache
     def record_suffer(request):
         try:
             sym=symptom.objects.get(pk=request.GET["symptoms"])
@@ -95,6 +99,7 @@ class PatientView:
         except symptom.DoesNotExist:
             return JsonResponse({"status":0,"message":'symptoms not found'})
     @OnlyGetRequest
+    @freshCache
     def load_patient(request):
         try:
             doc=DoctorModel.objects.get(pk=request.session["doctor_id"])
@@ -117,6 +122,7 @@ class PatientView:
             except symptom.DoesNotExist:
                 continue
     @OnlyGetRequest
+    @freshCache
     def record_diagnose(request):
         try:
             doc=DoctorModel.objects.get(pk=request.session["doctor_id"])
@@ -148,6 +154,7 @@ class PatientView:
             return JsonResponse({"status":0,"message":"your account't was'nt found"})
     @OnlyGetRequest
     @OnlyAuthenticatedDoctor
+    @freshCache
     def patient_page(request,pk):
         try:
             print(pk)
@@ -175,6 +182,7 @@ class PatientView:
             return redirect("doctor_dashboard")
     @OnlyAuthenticatedDoctor
     @OnlyGetRequest
+    @freshCache
     def filter_patient_history(request,pk):
         try:
             patient_obj=patient.objects.get(pk=pk)
@@ -197,6 +205,7 @@ class PatientView:
             return redirect("doctor_dashboard")
     @OnlyGetRequest
     @OnlyAuthenticatedDoctor
+    @freshCache
     def load_patients_in_excel(request):
         try:
             doc=DoctorModel.objects.get(pk=request.session["doctor_id"])

@@ -1,4 +1,13 @@
 {% load static %}
+<style>
+  .online_pointer{
+    position: absolute;
+    top: 0%;
+    left: 0%;
+    z-index: 200;
+    font-size: 15px;
+  }
+</style>
 <div class="influence-finder">
   <div class="container-fluid dashboard-content">
     <!-- ============================================================== -->
@@ -52,7 +61,7 @@
                     alt="User Avatar"
                     class="rounded-circle user-avatar-xl"
                   />
-                  <i class="fas fa-dot-circle"id="{{doctor_obj.id}}_online_pointer"style="color:green"></i>
+                  <i class="fas fa-dot-circle online_pointer"id="{{doctor_obj.id}}_online_pointer"style="color:green"></i>
                 </div>
                 <div class="pl-xl-3">
                   <div class="m-b-0">
@@ -79,7 +88,10 @@
                       <span class="m-l-10"
                         >{{doctor_obj.gender}}</span
                       >
+                      
                     </p>
+                    {{doctor_obj.email}}
+
                     <div class="mt-3">
                       {% comment %} <a href="#" class="mr-1 badge badge-light">Fitness</a
                       ><a href="#" class="mr-1 badge badge-light">Life Style</a
@@ -94,7 +106,7 @@
                   <a href="#" class="btn-wishlist m-r-10"
                     ><i class="far fa-star"></i
                   ></a>
-                  <a href="#" class="btn btn-secondary">Send Messages</a>
+                  <a href="{% url 'chat_page_doctors'  doctor.id doctor_obj.id%}" class="btn btn-secondary">Send Messages</a>
                 </div>
               </div>
             </div>

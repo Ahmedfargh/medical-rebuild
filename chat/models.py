@@ -5,8 +5,8 @@ import datetime
 class DoctorChat(models.Model):
     id=models.AutoField(primary_key=True)
     text=models.TextField()
-    sender=models.ForeignKey(DoctorModel, on_delete=models.CASCADE)
-    reciever=models.ForeignKey(DoctorModel,on_delete=models.CASCADE)
+    sender=models.ForeignKey(DoctorModel, on_delete=models.CASCADE,related_name="sender_object")
+    reciever=models.ForeignKey(DoctorModel,on_delete=models.CASCADE,related_name="reciever")
     created_at=models.DateTimeField( default=datetime.datetime.now(),auto_now=False, auto_now_add=False)
     def convert_to_json(self):
         return {

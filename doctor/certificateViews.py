@@ -1,6 +1,8 @@
 from django.shortcuts import render,redirect
 from .models import *
+from middlewares.LogedUserCache import freshCache
 class CertificateView:
+    @freshCache
     def index(request):
         try:
             doctorObj=DoctorModel.objects.get(pk=request.session["doctor_id"])
@@ -8,6 +10,7 @@ class CertificateView:
             return render(request,"certificate/index.html",{"doctor":doctorObj,"certificate":certificates})
         except DoctorModel.DoesNotExist:
             return render(request,"login.html",{"status":0,"message":"your session is ended"})
+    @freshCache
     def add(request):
         if request.method=="POST":
             try:

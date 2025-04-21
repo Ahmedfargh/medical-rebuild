@@ -1,7 +1,7 @@
 from doctor.models import DoctorModel
 from DataRepository import Repository
 from django.contrib.auth.hashers import make_password,check_password
-
+from patients.models import patient,patientNotes
 class DoctorRepo(Repository.Repo):
     def mass_assignment(self,data:dict):
         doctor=DoctorModel()
@@ -37,3 +37,17 @@ class DoctorRepo(Repository.Repo):
     def delete(self,model_id):
         DoctorModel.objects.get(pk=model_id).delete()
         return True
+    def getPatients(self,model_id):
+        doctor=DoctorModel.objects.get(pk=model_id)
+        patients=patient.objects.filter(doctor=doctor)
+        return patients
+    def getNotes(self,model_id):
+        doctor=DoctorModel.objects.get(pk=model_id)
+        return patientNotes.objects.filter(doctor=doctor)
+    def search_doctor_by_name(self,name):
+        return DoctorModel.objects.filter(name__icontains=name)
+    def search_by_email(self,email):
+        return DoctorModel.objects.filter(email__icontains=email)
+    def search_by_address(self,address):
+        return DoctorModel.objects.filter(email_icontains=address)
+    
