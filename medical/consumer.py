@@ -9,7 +9,6 @@ class DoctorIsOnLine(AsyncWebsocketConsumer):
     async def connect(self):
         await self.accept()
         
-        await self.send(text_data=json.dumps({"message": "your on line now"}))
 
     async def disconnect(self, close_code):
         pass

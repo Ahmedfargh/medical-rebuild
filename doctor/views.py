@@ -80,9 +80,9 @@ class DoctorView:
     @OnlyAuthenticatedDoctor
     @freshCache
     def modifyAccount(request):
-        print(request.GET)
+        print(request.POST)
         repo=DoctorRepo()
-        repo.update(request.session["doctor_id"],dict(request.GET))
+        repo.update(model_id=request.session["doctor_id"],data=dict(request.POST))
         return redirect("account")
     @OnlyPostRequest
     @OnlyAuthenticatedDoctor

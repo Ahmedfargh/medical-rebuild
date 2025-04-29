@@ -12,9 +12,9 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
+from django.core.asgi import get_asgi_application
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -31,13 +31,15 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
+    "channels",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "channels",
+    
     "chat",
     'doctor',
     "patients",
@@ -71,9 +73,12 @@ CACHES = {
 #         "LOCATION":"redis://127.0.0.1:6379/1",
 #     }
 # }
-CHANNELS_LAYERS={
+CHANNEL_LAYERS={
     
-        'default':{"BACKEND":"channels.layers.InMemoryChannelLayer"}
+        'default':{
+            "BACKEND":"channels.layers.InMemoryChannelLayer",
+            
+        }
     
 }
 

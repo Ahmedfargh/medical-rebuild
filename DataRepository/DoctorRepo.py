@@ -25,14 +25,18 @@ class DoctorRepo(Repository.Repo):
     def filter(self,*args, **kwargs):
         pass
     def update(self,model_id,data:dict):
-        doctor_object=DoctorModel.objects.get(pk=data["doctor_id"])
-        if data.get("name"):doctor_object.name=data["name"]
-        if data.get("address"):doctor_object.address=data["address"]
-        if data.get("graduation_date"):doctor_object.graduate_date=data["graduation_date"]
-        if data.get("phone"):doctor_object.phone=data["phone"]
-        if data.get("email"):doctor_object.email=data["email"]
-        if data.get("certificate_file"):doctor_object.certificate_file=data.get("certificate_file")
-        if data.get("perosnal_image"):doctor_object.personal_image.data.get("personal_image")
+        print("data inside repo")
+        print(data)
+        doctor_object=DoctorModel.objects.get(pk=model_id)
+        if "name" in data.keys():doctor_object.name=data["name"][0]
+        if "address" in data.keys():doctor_object.address=data["address"][0]
+        if "graduation_date" in data.keys():doctor_object.graduate_date=data["graduation_date"][0]
+        if "phone" in data.keys():doctor_object.phone=data["phone"][0]
+        if "email" in data.keys():doctor_object.email=data["email"][0]
+        if "certificate_file" in data.keys():doctor_object.certificate_file=data.get("certificate_file")
+        if "personal_image" in data.keys():
+            doctor_object.personal_image=data.get("personal_image")
+            print("shit")
         doctor_object.save()
     def delete(self,model_id):
         DoctorModel.objects.get(pk=model_id).delete()

@@ -1,5 +1,9 @@
 {% load static %}
 <div class="content-container">
+    <input type="hidden"name="other_name"value="{{reciever.name}}"id="reciever_name">
+    <input type="hidden"id="other_personal_image"value="{{reciever.personal_image.url}}">
+    <input type="hidden"id="your_personal_image"value="{{doctor.personal_image.url}}">
+    <input type="hidden"id="your_name"=value="{{doctor.name}}">
     <div class="chat-module">
         <div class="chat-module-top">
             <form>
@@ -15,16 +19,13 @@
             <div class="chat-module-body">
                 {% for chat in chat_content%}
                     <div class="media chat-item">
-                        <img alt="William" src="../assets/images/avatar-1.jpg" class="rounded-circle user-avatar-lg">
-                        <div class="media-body">
+                        <img alt="William" src="{{chat.sender.personal_image.url}}" class="rounded-circle user-avatar-lg">
+                        <div class="media-body" >
                             <div class="chat-item-title">
                                 <span class="chat-item-author">
-                                    <a class="nav-link nav-user-img" href="#" id="navbarDropdownMenuLink2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <img src="{{chat.sender.personal_image}}" alt="" class="user-avatar-md rounded-circle">
-                                    </a>
-
+                                    
                                     {% if chat.sender.id == doctor.id %}
-                                        <span class="alert alert-success">you</span>
+                                        you
                                     {% else %}
                                         {{chat.sender.name}}
 
@@ -35,10 +36,11 @@
                             <div class="chat-item-body">
                                 <p>{{chat.text}}</p>
                             </div>
+
                         </div>
                     </div>
                 {% endfor %}
-                
+                <input type="hidden"name="chatRoomIs"id="chatRoomIs"value="{{room.id}}">
                 {% comment %} <div class="media chat-item">
                     <img alt="Daniel" src="../assets/images/avatar-2.jpg" class="rounded-circle user-avatar-lg">
                     <div class="media-body">
@@ -84,18 +86,44 @@
             </form>
         </div>
     </div>
-    <input type="hidden" id="reciever_id"value="{{reciever}}">
+    <input type="hidden" id="reciever_id"value="{{reciever.id}}">
     <input type="hidden" id="sender_id" value="{{doctor.id}}">
     <script src="{% static '/vendor/jquery/jquery-3.3.1.min.js'%}"></script>
     <script>
-        $(document).ready(function(){
-            let url="/ws/doctor/doctor/chat/";
-            let socket=new WebSocket("/ws/doctor/doctor/chat/"+$("#sender_id").val()+"/"+$("#reciever_id").val()+"/");
-            socket.onopen=function(message){
-                console.log(message);
+        function renderMessage(message,type){
+            console.log(JSON.parse(message).message);
+
+            message=JSON.parse(message).message;
+            if(type=="sent"){
+                let html="<div class='media chat-item'>";
+                html+="<img alt='William' src="+$("#your_personal_image").val()+" class='rounded-circle user-avatar-lg'>";
+                html+="<div class='chat-item-title'><span class='chat-item-author'>you";
+                html+="</span><span>now</span></div>";
+                html+=" <div class='chat-item-body'><p>"+message+"</p></div>"
+                html+"</div></div>";
+                $(".chat-module-body").html($(".chat-module-body").html()+html);
+            }else{
+                let html="<div class='media chat-item'>";
+                html+="<img alt='William' src="+$("#other_personal_image").val()+" class='rounded-circle user-avatar-lg'>";
+                html+="<div class='chat-item-title'><span class='chat-item-author'>"+$("#other_name").val();
+                html+="</span><span>now</span></div>";
+                html+=" <div class='chat-item-body'><p>"+message+"</p></div>"
+                html+"</div></div>";
+                $(".chat-module-body").html($(".chat-module-body").html()+html); 
             }
+        }
+        $(document).ready(function(){
+            let your_conversation_inbox=new WebSocket("ws://localhost:8000/ws/doctor/doctor/chat/"+$("#reciever_id").val()+"/"+$("#sender_id").val()+"/"+$("#chatRoomIs").val()+"/");
+            
+            your_conversation_inbox.onmessage=function(message){
+                renderMessage(message.data,"recieved");
+            }
+            let his_conversation_inbox=new WebSocket("ws://localhost:8000/ws/doctor/doctor/chat/"+$("#sender_id").val()+"/"+$("#reciever_id").val()+"/"+$("#chatRoomIs").val()+"/");
             $("#sendButton").on("click",function(){
-                socket.send(JSON.stringify({"text":$("#message").val()}));
+                console.log(JSON.stringify({"text":$("#message").val()}));
+
+                his_conversation_inbox.send(JSON.stringify({"text":$("#message").val()}));
+                renderMessage(JSON.stringify({"message":$("#message").val()}),"sent");
             });
         });
     </script>
