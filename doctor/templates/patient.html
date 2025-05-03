@@ -41,6 +41,7 @@
       <!-- left sidebar -->
       <!-- ============================================================== -->
       {% include "parts/sidebar.html"%}
+      
       <!-- ============================================================== -->
       <!-- end left sidebar -->
       <!-- ============================================================== -->
@@ -50,9 +51,45 @@
       <div class="dashboard-wrapper">
         <div class="container-fluid dashboard-content">
           <div class="row">
-            {% include 'parts/patients/card.html'%}
-            {% include 'parts/patients/add notes.html'%}
-            {% include 'parts/patients/patient notes.html'%}
+            <div class=" col-12">
+              <div class="">
+                  <div class="card-header pills-regular">
+                      <ul class="nav nav-pills card-header-pills" id="myTab2" role="tablist">
+                          <li class="nav-item">
+                              <a class="nav-link active show" id="card-pills-1" data-toggle="tab" href="#card-pill-1" role="tab" aria-controls="card-1" aria-selected="false">personal info</a>
+                          </li>
+                          <li class="nav-item">
+                              <a class="nav-link" id="card-pills-2" data-toggle="tab" href="#card-pill-2" role="tab" aria-controls="card-2" aria-selected="false">addig notes</a>
+                          </li>
+                          <li class="nav-item">
+                              <a class="nav-link " id="card-pills-3" data-toggle="tab" href="#card-pill-3" role="tab" aria-controls="card-3" aria-selected="true">sharing records</a>
+                          </li>
+                          <li class="nav-item">
+                            <a class="nav-link" id="card-pills-4" data-toggle="tab" href="#card-pill-4" role="tab" aria-controls="card-4" aria-selected="true">Patient's notes</a>
+                        </li>
+                      </ul>
+                  </div>
+                  <div class="card-body">
+                      <div class="tab-content" id="myTabContent2">
+                          <div class="tab-pane fade active show" id="card-pill-1" role="tabpanel" aria-labelledby="card-tab-1">
+                            {% include 'parts/patients/card.html'%}
+                          </div>
+                          <div class="tab-pane fade" id="card-pill-2" role="tabpanel" aria-labelledby="card-tab-2">
+                            {% include 'parts/patients/add notes.html'%}
+                          </div>
+                          <div class="tab-pane fade " id="card-pill-3" role="tabpanel" aria-labelledby="card-tab-3">
+                              {% include 'parts/patients/sharingRecord.html'%}
+                          </div>
+                          <div class="tab-pane fade" id="card-pill-4" role="tabpanel" aria-labelledby="card-tab-4">
+                            {% include 'parts/patients/patient notes.html' %}
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+            
+            
+            
           </div>
         </div>
         <!-- ============================================================== -->

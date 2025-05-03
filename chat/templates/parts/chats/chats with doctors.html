@@ -69,16 +69,11 @@
                       <h2 class="font-24 m-b-10">{{doctor_obj.name}}</h2>
                     </div>
                     <div
-                      class="rating-star d-inline-block pl-xl-2 mb-2 mb-xl-0"
+                      class=" d-inline-block pl-xl-2 mb-2 mb-xl-0"
                     >
                     <i class="fas fa-check-circle"></i>
                       <input type="hidden"class="doctor_id"value="{{doctor_obj.id}}">
-                      <i class="fa fa-fw fa-star"></i>
-                      <i class="fa fa-fw fa-star"></i>
-                      <i class="fa fa-fw fa-star"></i>
-                      <i class="fa fa-fw fa-star"></i>
-                      <i class="fa fa-fw fa-star"></i>
-                      <p class="d-inline-block text-dark">14 Reviews</p>
+                      <a class="link choose_to_share" onclick='append_to_share({{doctor_obj.id}})' id ="choose_to_share"><i class="fas fa-share" style="font-size:20px;"></i></a>
                     </div>
                   </div>
                   <div class="user-avatar-address">
@@ -103,9 +98,7 @@
               </div>
               <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 col-12">
                 <div class="float-xl-right float-none mt-xl-0 mt-4">
-                  <a href="#" class="btn-wishlist m-r-10"
-                    ><i class="far fa-star"></i
-                  ></a>
+                 
                   <a href="{% url 'chat_page_doctors'  doctor.id doctor_obj.id%}" class="btn btn-secondary">Send Messages</a>
                 </div>
               </div>
@@ -155,3 +148,16 @@
 <script src="{% static '/ajax/axios.js'%}"></script>
 <script src="{% static '/js/validation.js'%}"></script>
 {% include 'parts/chats/checkinOnlineStatus.html'%}
+<script>
+  function append_to_share(doctor_id){
+    let shared_patient_with=window.localStorage.getItem("shared_patient_with");
+    if(!shared_patient_with){
+      shared_patient_with= [];
+
+    }
+    shared_patient_with.unshift(doctor_id);
+    window.localStorage.setItem("shared_patient_with",JSON.stringify(shared_patient_with));
+    alert(window.localStorage.getItem("shared_patient_with"));
+  }
+  
+</script>

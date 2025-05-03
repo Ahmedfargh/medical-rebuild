@@ -1,3 +1,3 @@
-uvicorn medical.asgi:application --reload
+daphne medical.asgi:application 
 
 pause

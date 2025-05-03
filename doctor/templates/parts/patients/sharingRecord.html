@@ -1,0 +1,73 @@
+{% load static %}
+
+<div class="card">
+    <div class="card-header">
+        <h3>sharing reports</h3>
+    </div>
+    <div class="card-body"id="ready_to_share_doctor">
+    </div>
+    <input type="hidden"id="patient_id"value="{{patient.id}}">
+
+</div>
+<script src="{% static '/vendor/jquery/jquery-3.3.1.min.js'%}"></script>
+<script>
+    function reresh_ready_to_share(doctor_id){
+        let doctors=JSON.parse(localStorage.getItem("shared_patient_with"));
+        doctors=doctors.filter(function(val){return doctor_id!=val});
+        localStorage.setItem("shared_patient_with",doctors);
+        load_doctors();
+    }
+    function share_patient(doctor_id,index){
+        $.ajax({
+            url:"/doctor/share/patient/"+doctor_id+"/"+$("#patient_id").val()+"/",
+            data:{
+                permission:$("#doctor_"+index).val()
+            },
+            success:function(data){
+                console.log(data);
+                $("#doctor_panel_index_"+index).hide();
+                reresh_ready_to_share(doctor_id);
+            },
+
+        });
+    }
+    function render_obj(obj,index){
+        let html='<a href="#" class="list-group-item ">';
+        html+="<div class='row'id='doctor_panel_index_"+index+"'>";
+        html+="<div class='col-4'>"+obj.name+'</div>'
+        html+="<div class='col-4'><div class='form-group'><div class='input-group-text'><label>الصلاحية</label></div><select id='doctor_"+index+"' class='form-control'><option value='read_only'>read only</option><option value='full_action'>full action</option></select></div></div>";
+        html+="<div class='col-4'><button class='btn btn-info'onclick='share_patient("+obj.id+","+index+")'>share</button></div>";
+        html+="</div>";
+        html+="</a>";
+        $("#ready_to_share_doctor").append(html);
+    }
+    function load_doctor_obj(id,index){
+        $.ajax({
+            url:"/doctor/get/doctor/profile/"+id+"/",
+            success:function(data){
+                render_obj(data,index);
+            },
+            failure:function(data){
+                console.log(data);
+            }
+        });
+    }
+    function load_doctors(){
+        console.log(localStorage.getItem("shared_patient_with"));
+
+        let doctors=localStorage.getItem("shared_patient_with");
+        if(doctors){
+            doctors=JSON.parse(doctors);
+            let index=0;
+            for (const doctor_id of doctors) {
+                console.log(doctor_id);
+                load_doctor_obj(doctor_id,index);
+                index++;
+            }
+        }
+    }
+    $(document).ready(function(){
+        load_doctors();
+    });
+
+  </script>

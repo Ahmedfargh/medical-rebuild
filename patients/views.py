@@ -25,6 +25,8 @@ from middlewares.DoctorObjectFound import OnlyAuthenticatedDoctor
 from middlewares.onlyGetRequests import OnlyGetRequest
 from DataRepository.PatientsRepo import patientsRepo
 from middlewares.LogedUserCache import freshCache
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 # Create your views here.
 class PatientView:
@@ -36,6 +38,20 @@ class PatientView:
         data=dict(request.GET)
         data["doctor"]=DoctorModel.objects.get(pk=request.session["doctor_id"])
         patient_object=repo.mass_assignment(data=data)
+        doctor_id=request.session["doctor_id"]
+        group_name=f"doctor_{doctor_id}_group"
+        payload={
+            "message":"your patient has been added successfully",
+
+        }
+        channel_layer=get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            group_name,
+            {
+                "type":"notify.doctor",
+                "payload":payload
+            }
+        )
         return JsonResponse({"status":1,"patient":patient_object.to_json()})
     @OnlyGetRequest
     @freshCache
@@ -231,4 +247,5 @@ class PatientView:
         
         except patient.DoesNotExist:
             return redirect("doctor_dashboard")
-        
+    
+    

@@ -1,6 +1,51 @@
 {%load static%}
 <div class="card col-lg-12 col-md-12 col-sm-12 col-xs-12">
   <div class="card-header">
+    <h1>personal info</h1>
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col-3">
+        <h4>name</h4>
+      </div>
+      <div class="col-3">
+        <h4>{{patient.name}}</h4>
+      </div>
+      <div class="col-3">
+        <h4>phone</h4>
+      </div>
+      <div class="col-3">
+        <h4>{{patient.phone}}</h4>
+      </div>
+      <div class="col-3">
+        <h4>address</h4>
+      </div>
+      <div class="col-3">
+        <h4>{{patient.address}}</h4>
+      </div>
+      <div class="col-3">
+        <h4>job</h4>
+      </div>
+      <div class="col-3">
+        <h4>{{patient.job}}</h4>
+      </div>
+      <div class="col-3">
+        <h4>doctor</h4>
+      </div>
+      <div class="col-3">
+        <h4>
+          {% if doctor.id == patient.doctor.id %}
+            you
+          {% else %}
+            {{patient.doctor.name}}
+          {% endif %}
+        </h4>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="card col-lg-12 col-md-12 col-sm-12 col-xs-12">
+  <div class="card-header">
     <h2>{{patient.name}}'s history</h2>
     <h4>
       {% if excel_file %}

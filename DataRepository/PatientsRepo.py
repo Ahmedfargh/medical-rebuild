@@ -14,6 +14,8 @@ class patientsRepo(Repo):
         return patient_object
     def get_all(self):
         return patient.objects.all()
+    def get_by_id(self, model_id):
+        return patient.objects.get(pk=model_id)
     def delete(self, model_id):
         return patient.objects.filter(pk=model_id).delete()
     def update(self, model_id, **data):

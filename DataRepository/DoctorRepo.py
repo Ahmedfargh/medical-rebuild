@@ -21,7 +21,7 @@ class DoctorRepo(Repository.Repo):
         try:
             return DoctorModel.objects.get(pk=model_id)
         except DoctorModel.DoesNotExist:
-            return None
+            raise 
     def filter(self,*args, **kwargs):
         pass
     def update(self,model_id,data:dict):

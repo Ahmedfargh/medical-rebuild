@@ -66,4 +66,19 @@ class patientNotes(models.Model):
         }
     def convert_to_json_list(query):
         return [model.to_json() for model in query]
+class allowedTo(models.Model):
+    id=models.AutoField(primary_key=True)
+    patient=models.ForeignKey(patient, on_delete=models.CASCADE)
+    doctor=models.ForeignKey(DoctorModel ,on_delete=models.CASCADE)
+    allowed=models.TextField(default="__read__")
+    created_at=models.DateField(default=datetime.date.today, auto_now=False, auto_now_add=False)
+    patient_approved=models.BooleanField(default=False)
+    
+    def to_json(self):
+        return {
+            "id":self.id,
+            "patient":self.patient,
+            "doctor":self.doctor,
+            "created_at":self.created_at
+        }
 post_save.connect(notifiyDoctor,sender=patient)

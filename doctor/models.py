@@ -20,7 +20,7 @@ class DoctorModel(AbstractBaseUser):
     address=models.TextField()
     password=models.TextField()
     phone=models.TextField()
-
+    USERNAME_FIELD='email'
     graduate_date=models.DateField()
     certificate_file=models.FileField( upload_to="doctor/file/certificated", validators=[validate_pdf])
     personal_image=models.ImageField( upload_to="doctor/file/perosnal_image",validators=[validate_image])

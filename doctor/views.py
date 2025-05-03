@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-from django.http import JsonResponse
+from django.http import JsonResponse,Http404
 
 from doctor.forms import RegisterForm
 from .models import DoctorModel
@@ -14,6 +14,9 @@ from middlewares.OnlyPostRequests import OnlyPostRequest
 from middlewares.DoctorObjectFound import OnlyAuthenticatedDoctor
 from DataRepository.DoctorRepo import DoctorRepo
 from middlewares.LogedUserCache import freshCache
+from DataRepository.PatientsRepo import patientsRepo
+from patients.models import allowedTo
+from DataRepository.allowedToPatient import allowTohandlePatientRepo
 # Create your views here.
 class DoctorView:
     def logingPage(request):
@@ -116,3 +119,29 @@ class DoctorView:
             return JsonResponse({"status":1,"message":"the notes was saved"})
         except patient.DoesNotExist:
             return JsonResponse({"status":0,"message":"patient was'nt found"}) 
+    @OnlyAuthenticatedDoctor
+    @freshCache
+    def getDoctorProfile(request,id):
+        try:
+            return JsonResponse(DoctorModel.objects.get(pk=id).to_json())
+        except DoctorModel.DoesNotExist:
+            return Http404("not found")
+    @OnlyAuthenticatedDoctor
+    @freshCache
+    
+    def sharePatient(request,doctor_id,patient_id):
+        try:
+            doctor_objs=DoctorRepo().get_by_id(doctor_id)
+            patient_obj=patientsRepo().get_by_id(patient_id)
+            if allowTohandlePatientRepo.is_shared(patient_obj,doctor_objs):
+                return JsonResponse({"status":0,"message":"no duplicates allowed"})
+            allowed=allowedTo()
+            allowed.doctor=doctor_objs
+            allowed.patient=patient_obj
+            allowed.allowed=request.GET.get("permission")
+            allowed.save()
+            return JsonResponse({"patient":patient_obj.to_json(),"doctor":doctor_objs.to_json(),"status":1})
+        except DoctorModel.DoesNotExist:
+            return JsonResponse({"doctor":None,"patient":None,"status":0,"message":"doctor not found"})
+        except patient.DoesNotExist:
+            return JsonResponse({"doctor":None,"patient":None,"status":0,"message":"patient not found"})

@@ -1,5 +1,6 @@
+{% load static %}
 <div class="dashboard-header">
-    <nav class="navbar navbar-expand-lg bg-white fixed-top">
+    <nav class="navbar navbar-expand-sm bg-white fixed-top">
       <a class="navbar-brand" href="{% url 'doctor_dashboard'%}">{{ doctor.name}}</a>
       <button
         class="navbar-toggler"
@@ -11,6 +12,10 @@
         aria-label="Toggle navigation"
       >
         <span class="navbar-toggler-icon"></span>
+        
+      </button>
+      <button class="btn btn-primary"id="clear_shared">
+        clear allowed to share
       </button>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav ml-auto navbar-right-top">
@@ -212,7 +217,34 @@
           <li class="nav-item dropdown nav-user">
             {% include 'parts/account.html'%}
           </li>
+          <input type="hidden" id="doctor_id"value="{{doctor.id}}">
         </ul>
       </div>
     </nav>
   </div>
+  <script src="{% static '/vendor/jquery/jquery-3.3.1.min.js'%}"></script>
+
+  <script>
+    $(document).ready(function(){
+      let notificationChannel= new WebSocket("ws://localhost:8000/ws/doctor/notification/channel/"+$("#doctor_id").val());
+      notificationChannel.onopen=function(){
+        console.log("you are on line");
+      }
+      notificationChannel.onmessage=function(message){
+        console.log(message);
+      }
+      if(!localStorage.getItem("shared_patient_with")){
+        $("#clear_shared").hide();
+      }
+    });
+    window.setInterval(function(){
+      console.log(localStorage.getItem("shared_patient_with"));
+      if(localStorage.getItem("shared_patient_with")){
+        $("#clear_shared").fadeIn();
+      }
+    },500);
+    window.setInterval(function(){
+      localStorage.setItem("shared_patient_with",null);
+      $("#clear_shared").fadeOut();
+    },1200000);
+  </script>

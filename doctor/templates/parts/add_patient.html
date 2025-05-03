@@ -85,11 +85,7 @@
                             job:job
                         },
                         success:function(response){
-                            console.log(response);
-                            if(response.status){
-                              alert("patient was "+response.patient.name+"was added");
-                              //window.location.reload();
-                            }
+                            
                         },
                         error:function(error){
                             console.log(error);

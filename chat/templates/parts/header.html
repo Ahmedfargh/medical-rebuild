@@ -12,9 +12,12 @@
       >
         <span class="navbar-toggler-icon"></span>
       </button>
+      <button class="btn btn-primary"id="clear_shared">
+        clear allowed to share
+      </button>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav ml-auto navbar-right-top">
-         
+          
           <li class="nav-item dropdown notification">
             <a
               class="nav-link nav-icons"
@@ -209,6 +212,7 @@
               </li>
             </ul>
           </li>
+          
           <li class="nav-item dropdown nav-user">
             <a
               class="nav-link nav-user-img"
@@ -246,3 +250,20 @@
       </div>
     </nav>
   </div>
+  <script>
+    $(document).ready(function(){
+      //clear_shared
+      if(localStorage.getItem("shared_patient_with")){
+        $("#clear_shared").hide();
+      }
+    });
+    window.setInterval(function(){
+      if(localStorage.getItem("shared_patient_with")){
+        $("#clear_shared").fadeIn();
+      }
+    },500);
+    window.setInterval(function(){
+      localStorage.setItem("shared_patient_with",null);
+      $("#clear_shared").fadeOut();
+    },1200000);
+  </script>
