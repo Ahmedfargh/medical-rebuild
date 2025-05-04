@@ -66,7 +66,13 @@
                           </li>
                           <li class="nav-item">
                             <a class="nav-link" id="card-pills-4" data-toggle="tab" href="#card-pill-4" role="tab" aria-controls="card-4" aria-selected="true">Patient's notes</a>
-                        </li>
+                          </li>
+                          <li class="nav-item">
+                            <a class="nav-link" id="card-pills-5" data-toggle="tab" href="#card-pill-5" role="tab" aria-controls="card-5" aria-selected="true">upload files</a>
+                          </li>
+                          <li class="nav-item">
+                            <a class="nav-link" id="card-pills-6" data-toggle="tab" href="#card-pill-6" role="tab" aria-controls="card-6" aria-selected="true">media</a>
+                          </li>
                       </ul>
                   </div>
                   <div class="card-body">
@@ -82,6 +88,12 @@
                           </div>
                           <div class="tab-pane fade" id="card-pill-4" role="tabpanel" aria-labelledby="card-tab-4">
                             {% include 'parts/patients/patient notes.html' %}
+                          </div>
+                          <div class="tab-pane fade" id='card-pill-5' role="tabpanel" aria-labelledby="card-tab-5">
+                            {% include 'parts/patients/media/UploadFiles.html'%}
+                          </div>
+                          <div class="tab-pane fade" id='card-pill-6' role='tabpanel' aria-labelledby="card-tab-6">
+                            {% include 'parts/patients/media/UploadedMedia.html'%}
                           </div>
                       </div>
                   </div>

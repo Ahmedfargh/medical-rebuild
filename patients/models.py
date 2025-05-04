@@ -5,7 +5,12 @@ from doctor.models import DoctorModel
 from doctor.models import symptom
 from django.db.models.signals import post_save
 from doctor.notifiyDoctor import notifiyDoctor
+from django.core.exceptions import ValidationError
 # Create your models here.
+def validate_size(value):
+    file_size=value.size
+    if file_size >20 * 1024 *1024:
+        raise ValidationError("file must be less than 20 mb")
 class patient(models.Model):
     id=models.AutoField(primary_key=True)
     name=models.TextField()
@@ -81,4 +86,11 @@ class allowedTo(models.Model):
             "doctor":self.doctor,
             "created_at":self.created_at
         }
+    
+class patient_media(models.Model):
+    id=models.AutoField(primary_key=True)
+    patient=models.ForeignKey(patient, on_delete=models.CASCADE)
+    file=models.FileField( upload_to="patient/media/",validators=[validate_size])
+    created_at=models.DateField(default=datetime.date.today, auto_now=False, auto_now_add=False)
+    file_type=models.TextField(default=None)
 post_save.connect(notifiyDoctor,sender=patient)

@@ -1,0 +1,22 @@
+{% load static %}
+<div class="card col-lg-12 col-md-12 col-sm-12 col-xs-12">
+    <div class="card-header">
+        <h3>maximum file size is 20 mb</h3>
+    </div> 
+    <div class="card-body">
+        <div class="row">
+            <form class="col-12 form-group"method="POST"action="{%url 'upload_patient_media'%}"enctype="multipart/form-data">
+                <div class="input-group">
+                    <label class="input-group-text">
+                        select files to upload
+                    </label>
+                    {% csrf_token %}
+                    <input type="hidden"name="patient_id"value="{{patient.id}}">
+                    <input type="file"name="files"multiple>
+                    <button class="btn btn-primary"type="submit"><i class="fas fa-upload"></i></button>
+
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

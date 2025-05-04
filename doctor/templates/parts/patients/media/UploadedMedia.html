@@ -1,0 +1,17 @@
+{%load static%}
+<div class="row">
+    {% for media in media_files%}
+    <div class="col-3">
+        
+        <div class="card">
+            <img src="{{media.file.url}}" class="card-img-top img-fluid p-2">
+
+            {% comment %} <div class="card-body">
+                <h3 class="card-title">Card title</h3>
+                <p class="card-text">Faucibus orci luctus et ultrices posuere cubilia Curae Integer quis ipsum in augue posuere congue.</p>
+                <p class="text-muted">Last updated 3 mins ago</p>
+            </div> {% endcomment %}
+        </div>
+    </div>
+    {% endfor %}
+</div>

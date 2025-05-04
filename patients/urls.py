@@ -10,5 +10,6 @@ patient_url=[
     path("doctor/patient/recorddiagnose/",PatientView.record_diagnose,name="record_diangose"),
     path("doctor/patient/page/?P<pk>\d+",PatientView.patient_page,name="patient_page"),
     path("doctor/patient/history/?P<pk>\d+/filter",PatientView.filter_patient_history,name="filter_patient_history"),
-    path("doctor/patient/excel",PatientView.load_patients_in_excel,name="load_patient_into_excel")
+    path("doctor/patient/excel",PatientView.load_patients_in_excel,name="load_patient_into_excel"),
+    path("doctor/patient/upload/media",PatientView.uploadPatientMedia,name="upload_patient_media")
 ]

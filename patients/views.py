@@ -27,7 +27,7 @@ from DataRepository.PatientsRepo import patientsRepo
 from middlewares.LogedUserCache import freshCache
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-
+from patients.models import patient_media
 # Create your views here.
 class PatientView:
     @OnlyGetRequest
@@ -120,9 +120,7 @@ class PatientView:
         try:
             doc=DoctorModel.objects.get(pk=request.session["doctor_id"])
             symp=symptom.objects.filter(symptom_parent=None,doctor_id=doc)
-            print(int(request.GET["patient"]))
             history=patient_suffer.objects.filter(patient_id=int(request.GET["patient"]))
-            print(patient_suffer)
             return JsonResponse({"status":1,"history":patient_suffer.convert_to_json_list(history),"symptoms":symptom.convert_to_json_list(symp)})
         except DoctorModel.DoesNotExist:
             return JsonResponse({"status":0,"message":"account not found"})
@@ -192,7 +190,9 @@ class PatientView:
                 notes = notes_paginate.get_page(1)
             cache.add(str(request.session["doctor_id"])+"_current_pagtient_history",page_obj.object_list.all(),600)
             print(cache.get(str(request.session["doctor_id"])+"_current_pagtient_history"))
-            return render(request,"patient.html",{"doctor":doc,"patient":patient_obj,"history":page_obj,"notes":notes})
+            media=patient_media.objects.filter(patient=patient_obj)
+
+            return render(request,"patient.html",{"doctor":doc,"patient":patient_obj,"history":page_obj,"notes":notes,"media_files":media})
 
         except patient.DoesNotExist:
             return redirect("doctor_dashboard")
@@ -247,5 +247,20 @@ class PatientView:
         
         except patient.DoesNotExist:
             return redirect("doctor_dashboard")
-    
-    
+    @OnlyPostRequest
+    @OnlyAuthenticatedDoctor
+    @freshCache
+    def uploadPatientMedia(request):
+        try:
+            patientObj=patient.objects.get(pk=request.POST.get("patient_id"))
+            files=request.FILES.getlist("files")
+            if files:
+                for file in files:
+                    media=patient_media()
+                    media.file_type=file.content_type
+                    media.file=file
+                    media.patient=patientObj
+                    media.save()
+            return redirect("patient_page",pk=request.POST.get("patient_id"))
+        except patient.DoesNotExist:
+            return redirect("patient_page",pk=request.POST.get("patient_id"))
